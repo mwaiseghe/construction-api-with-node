@@ -16,18 +16,23 @@ GET http://localhost:4500/projects/
 
 ###
 
-GET http://localhost:4500/projects/88f65ce3-55d5-43ac-b76b-5a52429f3ec6
+GET http://localhost:4500/projects/d7b6b939-6414-4a2d-a00b-e28b2bb2713b
 
 
 ###
 
-PUT http://localhost:4500/projects/88f65ce3-55d5-43ac-b76b-5a52429f3ec6
+PUT http://localhost:4500/projects/d7b6b939-6414-4a2d-a00b-e28b2bb2713b
 Content-Type: application/json
 
 {
     "project_name": "Project 1",
-    "description": "Project 1 description",
+    "description": "Project 1 To Delete",
     "project_location": "Nairobi",
     "startdate": "2021-01-01",
     "enddate": "2021-01-01"
 }
+
+###
+
+DELETE http://localhost:4500/projects/d7b6b939-6414-4a2d-a00b-e28b2bb2713b
+
