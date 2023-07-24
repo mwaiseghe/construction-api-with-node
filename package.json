@@ -1,0 +1,14 @@
+{
+  "name": "construction-api",
+  "version": "1.0.0",
+  "description": "Construction api using node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mwaiseghe",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
