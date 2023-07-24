@@ -1,0 +1,33 @@
+POST http://localhost:4500/projects/
+Content-Type: application/json
+
+{
+    "project_name": "Project 1",
+    "description": "Project 1 description",
+    "project_location": "Project 1 location",
+    "startdate": "2021-01-01",
+    "enddate": "2021-01-01"
+}
+
+
+###
+
+GET http://localhost:4500/projects/
+
+###
+
+GET http://localhost:4500/projects/88f65ce3-55d5-43ac-b76b-5a52429f3ec6
+
+
+###
+
+PUT http://localhost:4500/projects/88f65ce3-55d5-43ac-b76b-5a52429f3ec6
+Content-Type: application/json
+
+{
+    "project_name": "Project 1",
+    "description": "Project 1 description",
+    "project_location": "Nairobi",
+    "startdate": "2021-01-01",
+    "enddate": "2021-01-01"
+}
