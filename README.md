@@ -16,6 +16,7 @@ npm install body-parser
 npm install cors
 npm install mongoose
 npm install uuid
+npm install nodemon --save-dev
 ```
 
 3. Initialize express
@@ -36,3 +37,11 @@ mkdir app
 mkdir app/models
 ```
 
+
+## Connect to DB (Ms SQL Server)
+
+1. Install the dependencies
+
+```bash
+npm install mssql
+```
