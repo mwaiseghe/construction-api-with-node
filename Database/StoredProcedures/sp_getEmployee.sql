@@ -1,3 +1,6 @@
+USE construction_api;
+GO
+
 CREATE OR ALTER PROCEDURE sp_getEmployee
     @employee_email VARCHAR(200)
 

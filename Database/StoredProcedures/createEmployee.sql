@@ -1,3 +1,6 @@
+USE construction_api;
+GO
+
 CREATE OR ALTER PROCEDURE sp_createEmployee
     @id VARCHAR(200),
     @employee_name VARCHAR(200),

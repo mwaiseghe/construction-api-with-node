@@ -1,3 +1,6 @@
+USE construction_api;
+GO
+
 CREATE OR ALTER PROCEDURE sp_create_project(
     @id VARCHAR(200),
     @project_name VARCHAR(200),

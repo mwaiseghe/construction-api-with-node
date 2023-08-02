@@ -45,7 +45,7 @@ mssql.connect(sqlConfig).then(pool => {
     if (pool.connecting) {
         console.log('Disconnecting to database...');
     }
-    if (pool.connected) {
+    if (pool.disconnected) {
         console.log('Disconnected to database');
     }
     return pool;
@@ -55,4 +55,7 @@ mssql.connect(sqlConfig).then(pool => {
 }
 );
 
-module.exports = sqlConfig;
+module.exports = {
+    mssql,
+    sqlConfig
+}

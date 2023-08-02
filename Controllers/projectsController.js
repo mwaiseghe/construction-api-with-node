@@ -1,5 +1,5 @@
 const {v4} = require('uuid'); // import uuid from 'uuid'; // ES6 Modules
-const sqlConfig = require('../config/config');
+const {sqlConfig, mssql} = require('../config/config');
 const projects = [];
 
 class Project {
@@ -42,7 +42,7 @@ const createProject = async (req, res) => { // access to the request and respons
         }
         catch (error) {
             return res.json({
-                console.log(error);
+                error: error.message
             })
         }
     }
@@ -52,7 +52,7 @@ const getProjects = async (req, res) => {
     try {
         const pool = await mssql.connect(sqlConfig);
 
-        const allProjects = await pool.request().execute('sp_get_projects', (err, result) => {
+        const allProjects = await pool.request().execute('sp_getprojects', (err, result) => {
             if (err instanceof mssql.RequestError) {
                 console.log(err);
             }
