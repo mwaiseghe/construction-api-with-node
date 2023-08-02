@@ -1,5 +1,17 @@
 const {v4} = require('uuid'); // import uuid from 'uuid'; // ES6 Modules
+const {sqlConfig, mssql} = require('../config/config');
 const projects = [];
+
+class Project {
+    constructor(id, project_name, description, project_location, startdate, enddate) {
+        this.id = id;
+        this.project_name = project_name;
+        this.description = description;
+        this.project_location = project_location;
+        this.startdate = startdate;
+        this.enddate = enddate;
+    }
+}
 
 const createProject = async (req, res) => { // access to the request and response objects
     try {
@@ -7,29 +19,52 @@ const createProject = async (req, res) => { // access to the request and respons
 
         const {project_name, description, project_location, startdate, enddate} = req.body;
 
-        const newProject = {
-            id, project_name, description, project_location, startdate, enddate
+        const pool = await mssql.connect(sqlConfig);
+
+        await pool.request()
+            .input('id', mssql.VarChar, id)
+            .input('project_name', mssql.VarChar, project_name)
+            .input('description', mssql.VarChar, description)
+            .input('project_location', mssql.VarChar, project_location)
+            .input('startdate', mssql.Date, startdate)
+            .input('enddate', mssql.Date, enddate)
+            .execute('sp_create_project', (err, result) => {
+                if (err instanceof mssql.RequestError) {
+                    console.log(err);
+                }
+                else if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log(result);
+                }
+            });
         }
-
-        projects.push(newProject); // add new project to the projects array
-
-        res.json({
-            message: 'Project created successfully',
-            project: newProject
-        })
-
-    } catch (error) {
-        return res.json({
-            error: error
-        })
+        catch (error) {
+            return res.json({
+                error: error.message
+            })
+        }
     }
-}
+
 
 const getProjects = async (req, res) => {
     try {
-        res.json({
-            projects: projects
-        })
+        const pool = await mssql.connect(sqlConfig);
+
+        const allProjects = await pool.request().execute('sp_getprojects', (err, result) => {
+            if (err instanceof mssql.RequestError) {
+                console.log(err);
+            }
+            else if (err) {
+                console.log(err);
+            }
+            else {
+                res.json({
+                    projects: result.recordset
+                })
+            }
+        });
     } catch (error) {
         return res.json({
             error: error.message
@@ -37,25 +72,30 @@ const getProjects = async (req, res) => {
     }
 }
 
-
 const getProject = async (req, res) => {
     try {
         const {id} = req.params;
 
-        const project = projects.find(project => project.id === id);
+        const pool = await mssql.connect(sqlConfig); // connect to the database
 
-        if (!project) {
-            return res.json({
-                message: 'Project not found'
-            })
-        }
-
-        res.json({
-            project: project
-        })
+        const project = await pool.request()
+            .input('id', mssql.VarChar, id)
+            .execute('sp_get_project', (err, result) => {
+                if (err instanceof mssql.RequestError) {
+                    console.log(err);
+                }
+                else if (err) {
+                    console.log(err);
+                }
+                else {
+                    res.json({
+                        project: result.recordset[0]
+                    })
+                }
+            });
     } catch (error) {
         return res.json({
-            "error": error.message
+            error: error.message
         })
     }
 }
