@@ -1,3 +1,6 @@
+USE construction_api;
+GO
+
 BEGIN
 TRY
     CREATE TABLE employee_table(

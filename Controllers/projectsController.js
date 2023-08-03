@@ -1,17 +1,5 @@
 const {v4} = require('uuid'); // import uuid from 'uuid'; // ES6 Modules
 const {sqlConfig, mssql} = require('../config/config');
-const projects = [];
-
-class Project {
-    constructor(id, project_name, description, project_location, startdate, enddate) {
-        this.id = id;
-        this.project_name = project_name;
-        this.description = description;
-        this.project_location = project_location;
-        this.startdate = startdate;
-        this.enddate = enddate;
-    }
-}
 
 const createProject = async (req, res) => { // access to the request and response objects
     try {
@@ -60,7 +48,7 @@ const getProjects = async (req, res) => {
                 console.log(err);
             }
             else {
-                res.json({
+                res.status(200).json({
                     projects: result.recordset
                 })
             }
@@ -88,7 +76,8 @@ const getProject = async (req, res) => {
                     console.log(err);
                 }
                 else {
-                    res.json({
+                    res.status(200).json({
+                        
                         project: result.recordset[0]
                     })
                 }
@@ -120,7 +109,7 @@ const updateProject = async (req, res) => {
         project.startdate = startdate || project.startdate;
         project.enddate = enddate || project.enddate;
 
-        res.json({
+        res.status(200).json({
             message: 'Project updated successfully',
             project: project
         })

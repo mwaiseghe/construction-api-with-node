@@ -11,7 +11,7 @@ CREATE OR ALTER PROCEDURE sp_create_project(
 )
 AS
 BEGIN
-    INSERT INTO project (
+    INSERT INTO projects_table (
         id, project_name, description, 
         project_location, startdate, enddate
         )

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import mssql from 'mssql';
+import { employeeLogin } from '../Controllers/authController';
 
 const req = {
     body: {
@@ -41,3 +42,98 @@ describe('Register employee', () => {
         })
     })
 })
+
+jest.mock('bcrypt');
+
+describe("Employee Login Tests", () => {
+    it("Should return an error if email or password is missing", async () => {
+        const req = {
+            body: {}
+        }
+        await employeeLogin(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'Email and password are required'
+        })
+    })
+
+    it("Should return an error if User does not exist", async () => {
+        const req = {
+            body: {
+                employee_email: "me@gmail.com",
+                password: "123456"
+            }
+        }
+
+        jest.spyOn(mssql, 'connect').mockRejectedValueOnce({
+            request: jest.fn().mockReturnThis(),
+            input: jest.fn().mockReturnThis(),
+            execute: jest.fn().mockResolvedValueOnce({
+                rowsAffected: 0
+            })
+        })
+
+        await employeeLogin(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'Employee does not exist'
+        })
+    })
+
+    it("Should return an error if password is incorrect", async () => {
+        const req = {
+            body: {
+                employee_email: "AD 1",
+                password: "123456"
+            }
+        }
+
+        jest.spyOn(mssql, 'connect').mockRejectedValueOnce({
+            request: jest.fn().mockReturnThis(),
+            input: jest.fn().mockReturnThis(),
+            execute: jest.fn().mockResolvedValueOnce({
+                rowsAffected: 1,
+                recordset: [{
+                    password: "123456"
+                }]
+            })
+        })
+
+        await employeeLogin(req, res);
+        expect(res.status).toHaveBeenCalledWith(401);
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'Invalid email or password',
+            token: null
+        })
+    })
+
+    it("Should return a token if login is successful", async () => {
+        const req = {
+            body: {
+                employee_email: "devop047@gmail.com",
+                password: "123456"
+            }
+        }
+
+        jest.spyOn(mssql, 'connect').mockRejectedValueOnce({
+            request: jest.fn().mockReturnThis(),
+            input: jest.fn().mockReturnThis(),
+            execute: jest.fn().mockResolvedValueOnce({
+                rowsAffected: 1,
+                recordset: [{
+                    password: "123456"
+                }]
+            })
+        })
+
+        await employeeLogin(req, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'Employee logged in successfully',
+            token: expect.any(String)
+        })
+    })
+
+})
+
+

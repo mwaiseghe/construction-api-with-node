@@ -5,15 +5,21 @@ const {v4} = require('uuid');
 const { createEmployeeTable } = require('../Database/Tables/createTables');
 const sqlConfig = require('../config/config');
 const env = require('dotenv');
-const { loginSchema } = require('../Validators/employeeValidators');
+const { loginSchema, registerSchema } = require('../Validators/employeeValidators');
 env.config();
 
 
 const registerEmployee = async (req, res) => {
     try {
-        createEmployeeTable();
+
         const id = v4();
         const {employee_name, employee_email, password} = req.body; // destructuring
+
+        if (!employee_name || !employee_email || !password){
+            return res.status(400).json({
+                message: 'All fields are required'
+            })
+        }
 
         const {error} = registerSchema.validate(req.body);
         if (error) {
@@ -55,6 +61,12 @@ const employeeLogin = async (req, res) => {
     try {
         const {employee_email, password} = req.body;
 
+        if(!employee_email || !password){
+            return res.status(400).json({
+                message: 'Email and password are required'
+            })
+        }
+
         const {error} = loginSchema.validate(req.body);
         if (error) {
             return res.json({
@@ -70,7 +82,7 @@ const employeeLogin = async (req, res) => {
         .execute('sp_getEmployee');
 
         if (results.rowsAffected == 0){
-            return res.json({
+            return res.status(400).json({
                 message: 'Employee does not exist'
             })
         } else {
@@ -90,9 +102,8 @@ const employeeLogin = async (req, res) => {
                     token: token
                 })
             } else {
-                return res.json({
+                return res.status(401).json({
                     message: 'Invalid email or password',
-                    status: 401,
                     token: null
                 })
             }
