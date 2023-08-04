@@ -41,7 +41,7 @@ const registerEmployee = async (req, res) => {
         .execute('sp_createEmployee');
 
         if (results.rowsAffected == 1){
-            return res.json({
+            return res.status(200).json({
                 message: 'Employee created successfully'
             })
         } else {
@@ -91,12 +91,11 @@ const employeeLogin = async (req, res) => {
 
             if (isMatch){
                 const token = jwt.sign({
-                    employee_email: employee.employee_email,
+                    id: employee.id,
                     employee_name: employee.employee_name,
-                    role: employee.role
-                }, process.env.JWT_SECRET, {
-                    expiresIn: '1h'
-                });
+                    employee_email: employee.employee_email
+                }, process.env.JWT_SECRET, {expiresIn: '1h'});
+                
                 return res.json({
                     message: 'Employee logged in successfully',
                     token: token

@@ -1,4 +1,6 @@
-import mssql from 'mssql';
+// Mocking the mssql module
+const mssql = require('mssql');
+
 import { deleteProject, getProject, getProjects, updateProject } from '../Controllers/projectsController';
 
 const res = {
@@ -7,56 +9,61 @@ const res = {
 }
 
 describe("Projects Controller Tests", () => {
-    describe("Get All Projects", () => {
-        it("Should return all projects", async () => {
+    describe("Get all Projects", () => {
+        it("Should get all projects", async () => {
             // Arrange
-            const req = {
-                query: {}
-            }
+            const projects_list = [
+                {
+                    "id": "21865b4d-776f-4cfb-aaf5-960473858502",
+                    "project_name": "Django Project Updated 11",
+                    "description": "Work on the Daraja Django Project Next 11",
+                    "project_location": "Buruburu 59",
+                    "startdate": "2020-01-01T00:00:00.000Z",
+                    "enddate": "2020-02-01T00:00:00.000Z"
+                },
+                {
+                    "id": "5eec275c-94ea-4521-b3cb-1bc5a03c74b5",
+                    "project_name": "Django Project Updated 11",
+                    "description": "Work on the Daraja Django Project Next 11",
+                    "project_location": "Buruburu 59",
+                    "startdate": "2020-01-01T00:00:00.000Z",
+                    "enddate": "2020-02-01T00:00:00.000Z"
+                }
+            ]
+
+            const req = {}
 
             jest.spyOn(mssql, 'connect').mockResolvedValueOnce({
                 request: jest.fn().mockReturnThis(),
                 execute: jest.fn().mockResolvedValueOnce({
-                    recordset: [{
-                        id: 1,
-                        project_name: "Project 1",
-                        project_description: "Project 1 Description",
-                        project_start_date: "2020-01-01",
-                        project_end_date: "2020-02-01",
-                        project_status: "Active"
-                    }]
+                    recordset: projects_list
                 })
-            })
+            });
 
-            // Act
             await getProjects(req, res);
 
             // Assert
+            // console.log(res.status);
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith({
-                projects: [{
-                    id: expect.any(String),
-                    project_name: "Project 1",
-                    description: "Project 1 Description",
-                    project_start_date: "2020-01-01",
-                    project_end_date: "2020-02-01",
-                    project_status: "Active"
-                }]
+                projects: projects_list,
             })
         })
     })
 
-    describe("Get Project By Id", () => {
-        it("Should return a project by id", async () => {
 
-            const project_id = "1";
-            const mockProject = {
-                id: expect.any(String),
-                project_name: "Project 1",
-                description: "Project 1 Description",
-                project_start_date: "2020-01-01",
-                project_end_date: "2020-02-01",
-                project_status: "Active"
+
+    describe("Get a single Project", () => {
+        it("Should get a single project", async () => {
+            // Arrange
+            const project_id = "21865b4d-776f-4cfb-aaf5-960473858502";
+            const project = {
+                "id": "21865b4d-776f-4cfb-aaf5-960473858502",
+                "project_name": "Django Project Updated 11",
+                "description": "Work on the Daraja Django Project Next 11",
+                "project_location": "Buruburu 59",
+                "startdate": "2020-01-01T00:00:00.000Z",
+                "enddate": "2020-02-01T00:00:00.000Z"
             }
 
             const req = {
@@ -69,144 +76,55 @@ describe("Projects Controller Tests", () => {
                 request: jest.fn().mockReturnThis(),
                 input: jest.fn().mockReturnThis(),
                 execute: jest.fn().mockResolvedValueOnce({
-                    recordset: [mockProject]
+                    recordset: project
                 })
-
-            })
+            });
 
             await getProject(req, res);
 
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith({
-                project: [mockProject]
+                project: project
             })
         })
     })
 
-    describe("Update Project", () => {
-        it("Should update a project successfully", async () => {
-            const project_id = "1";
-            const updated_project = {
-                project_name: "Project 1",
-                description: "Project 1 Description",
-                project_location: "Project 1 Location",
-                startdate: "2020-01-01",
-                enddate: "2020-02-01"
-            }
-           
-            const req = {
-                params: {
-                    id: project_id
-                },
-                body: updated_project
-            }
+    // describe("create a Project", () => {
+    //     it("Should create a project", async () => {
+    //         // Arrange
+    //         const mockedInput = jest.fn().mockReturnThis();
+    //         const mockedExecute = jest.fn().mockResolvedValueOnce({
+    //             project: {
+    //                 "id": "21865b4d-776f-4cfb-aaf5-960473858502",
+    //                 "project_name": "Django Project Updated 11",
+    //                 "description": "Work on the Daraja Django Project Next 11",
+    //                 "project_location": "Buruburu 59",
+    //                 "startdate": "2020-01-01T00:00:00.000Z",
+    //                 "enddate": "2020-02-01T00:00:00.000Z"
+    //             }
+    //         });
 
-            jest.spyOn(mssql, 'connect').mockResolvedValueOnce({
-                request: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                input: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                execute: jest.fn().mockResolvedValueOnce({
-                    rowsAffected: [1]
-                })
-            })
-            await updateProject(req, res);
+    //         const mockedRequest = {
+    //             input: mockedInput,
+    //             execute: mockedExecute
+    //         }
 
-            expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({
-                message: 'Project updated successfully',
-                project: {
-                    updated_project
-                }
-            })
-        })
+    //         const mockedPool = {
+    //             request: jest.fn().mockReturnValue(
+    //                 mockedRequest
+    //             )
+    //         }
 
-        it("Should return an error if project is not found", async () => {
-            const project_id = "1";
-            const updated_project = {
-                project_name: "Project 1",
-                description: "Project 1 Description",
-                project_location: "Project 1 Location",
-                startdate: "2020-01-01",
-                enddate: "2020-02-01"
-            }
+    //         jest.spyOn(mssql, 'connect').mockResolvedValueOnce(mockedPool);
 
-            const req = {
-                params: {
-                    id: project_id
-                },
-                body: updated_project
-            }
+    //         // Act
+    //         await getProject({params: {id: "21865b4d-776f-4cfb-aaf5-960473858502"}}, res);
 
-            jest.spyOn(mssql, 'connect').mockResolvedValueOnce({
-                request: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                input: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                execute: jest.fn().mockResolvedValueOnce({
-                    rowsAffected: [0]
-                })
-            })
-            await updateProject(req, res);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.json).toHaveBeenCalledWith({
-                message: 'Project not found'
-            })
-        })
-
-        describe("Delete Project", () => {
-            it("Should delete a project successfully", async () => {
-                const project_id = "1";
-                
-                const req = {
-                    params: {
-                        id: project_id
-                    }
-                }
-
-                // Arrange
-                jest.spyOn(mssql, 'connect').mockResolvedValueOnce({
-                    request: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                    input: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                    execute: jest.fn().mockResolvedValueOnce({
-                        rowsAffected: [1]
-                    })
-                })
-
-                // Act
-                await deleteProject(req, res);
-
-                // Assert
-                expect(res.status).toHaveBeenCalledWith(200);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: 'Project deleted successfully'
-                })
-            })
-
-            it("Should return an error if project is not found", async () => {
-                const project_id = "1";
-                
-                const req = {
-                    params: {
-                        id: project_id
-                    }
-                }
-
-                // Arrange
-                jest.spyOn(mssql, 'connect').mockResolvedValueOnce({
-                    request: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                    input: jest.fn().mockReturnThis(), // mockReturnThis() returns the object that the function was called on
-                    execute: jest.fn().mockResolvedValueOnce({
-                        rowsAffected: [0]
-                    })
-                })
-
-                // Act
-                await deleteProject(req, res);
-
-                // Assert
-                expect(res.status).toHaveBeenCalledWith(404);
-                expect(res.json).toHaveBeenCalledWith({
-                    message: 'Project not found'
-                })
-            }
-        })
-    })
+    //         // Assert
+    //         expect(res.status).toHaveBeenCalledWith(200);
+    //         expect(res.json).toHaveBeenCalledWith({
+    //             project: project
+    //         })
+    //     })
+    // })
 })

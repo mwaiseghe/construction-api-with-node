@@ -4,11 +4,13 @@
 CREATE DATABASE construction_api;
 
 USE construction_api;
+GO
 
+DROP TABLE IF EXISTS projects_table;
 
 BEGIN
     TRY
-        CREATE TABLE projects_table(
+        CREATE TABLE projects_table (
             id VARCHAR(255) PRIMARY KEY,
             project_name VARCHAR(255) NOT NULL,
             description VARCHAR(255) NOT NULL,
